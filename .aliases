@@ -1,0 +1,31 @@
+# Common aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# Git aliases
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git log --oneline --graph --decorate'
+
+# System aliases
+alias update='sudo pacman -Syu'
+alias install='sudo pacman -S'
+alias remove='sudo pacman -Rs'
+alias search='pacman -Ss'
+
+# i3 aliases
+alias i3reload='i3-msg reload'
+alias i3restart='i3-msg restart'
+
+# Quick edit configs
+alias edit-i3='$EDITOR ~/.config/i3/config'
+alias edit-kitty='$EDITOR ~/.config/kitty/kitty.conf'
+alias edit-bash='$EDITOR ~/.bashrc'

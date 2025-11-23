@@ -232,8 +232,7 @@ dnf install -y \
   kitty \
   thunar thunar-volman gvfs udisks2 ntfs-3g exfatprogs dosfstools \
   feh \
-  rofi
-|| true
+  rofi || true
 
 # Install essential utilities
 echo "📦 Installing essential utilities..."

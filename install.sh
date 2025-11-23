@@ -42,7 +42,9 @@ check_sudo_user() {
 install_if_missing() {
   local package=$1
   if ! dnf list installed "$package" &> /dev/null; then
-    dnf install -y "$package"
+    if ! dnf install -y "$package"; then
+      echo -e "${YELLOW}⚠${NC}  Could not install $package (not available or failed), skipping"
+    fi
   else
     echo "   ✅ $package already installed"
   fi
@@ -228,9 +230,10 @@ dnf update -y
 echo "📦 Installing main packages..."
 dnf install -y \
   kitty \
-  thunar thunar-volman gvfs udisks2 ntfs-3g exfat-utils dosfstools \
+  thunar thunar-volman gvfs udisks2 ntfs-3g exfatprogs dosfstools \
   feh \
   rofi
+|| true
 
 # Install essential utilities
 echo "📦 Installing essential utilities..."

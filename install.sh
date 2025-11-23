@@ -282,16 +282,23 @@ sudo -u "$SUDO_USER" bash -c '
     find "$HOME/.local/src/i3blocks-contrib" -type f -perm /111 -print0 \
       | while IFS= read -r -d '' f; do
         name=$(basename "$f")
+        # skip empty names (defensive)
+        if [ -z "$name" ]; then
+          continue
+        fi
         target="$HOME/.local/bin/$name"
-        if [ -e "$target" ] || [ -L "$target" ]; then
+        if [ -L "$target" ] || [ -f "$target" ]; then
           # only replace if it points to a different file
           if [ "$(readlink -f "$target")" = "$(readlink -f "$f")" ]; then
             continue
           else
             mv -f "$target" "$target".backup 2>/dev/null || true
           fi
+        elif [ -d "$target" ]; then
+          # target is a directory; move it aside so we can create the symlink
+          mv -f "$target" "$target".backup 2>/dev/null || true
         fi
-        ln -sf "$f" "$target"
+        ln -sf "$f" "$target" 2>/dev/null || true
     done
   fi
 '

@@ -274,6 +274,28 @@ sudo -u "$SUDO_USER" bash -c '
   fi
 '
 
+# Create ~/.local/bin and symlink commonly-used contrib scripts there
+sudo -u "$SUDO_USER" bash -c '
+  mkdir -p "$HOME/.local/bin"
+  if [ -d "$HOME/.local/src/i3blocks-contrib" ]; then
+    # For each executable file in contrib, create a symlink in ~/.local/bin
+    find "$HOME/.local/src/i3blocks-contrib" -type f -perm /111 -print0 \
+      | while IFS= read -r -d '' f; do
+        name=$(basename "$f")
+        target="$HOME/.local/bin/$name"
+        if [ -e "$target" ] || [ -L "$target" ]; then
+          # only replace if it points to a different file
+          if [ "$(readlink -f "$target")" = "$(readlink -f "$f")" ]; then
+            continue
+          else
+            mv -f "$target" "$target".backup 2>/dev/null || true
+          fi
+        fi
+        ln -sf "$f" "$target"
+    done
+  fi
+'
+
 # Install audio system
 echo "🔊 Installing audio system..."
 if systemctl --user is-active --quiet pipewire 2>/dev/null || pgrep -x pipewire > /dev/null; then

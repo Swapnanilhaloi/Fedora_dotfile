@@ -3,7 +3,7 @@ separator_block_width=15
 markup=none
 
 [volume-pulseaudio]
-command=~/.local/src/i3blocks-contrib/volume-pulseaudio/volume-pulseaudio
+command=$HOME/.local/src/i3blocks-contrib/volume-pulseaudio/volume-pulseaudio
 interval=1
 signal=10
 LONG_FORMAT="${SYMB}${VOL}%"
@@ -20,5 +20,5 @@ command=echo -n '  '; df -h -l --output='used' "$HOME" | grep -E -o '[0-9]+G'
 interval=30
 
 [rofi-calendar]
-command=~/.local/bin/rofi-calendar
+command=$HOME/.local/bin/rofi-calendar
 interval=5

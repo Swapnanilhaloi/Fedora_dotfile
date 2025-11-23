@@ -169,9 +169,12 @@ bindsym $mod+Print              exec --no-startup-id gnome-screenshot -a
 bindsym $mod+Shift+x            exec --no-startup-id i3lock-fancy -f Source-Sans-Pro
 
 # volume
-bindsym XF86AudioLowerVolume    exec --no-startup-id amixer -q -D pulse sset Master 5%- unmute
-bindsym XF86AudioRaiseVolume    exec --no-startup-id amixer -q -D pulse sset Master 5%+ unmute
-bindsym XF86AudioMute           exec --no-startup-id amixer -q -D pulse sset Master toggle
+# The following binds were replaced by the auto-generated `audio-brightness.conf`
+# via the installer (pactl-based bindings). Commenting out the old amixer binds
+# to prevent duplicate keybinding errors.
+#bindsym XF86AudioLowerVolume    exec --no-startup-id amixer -q -D pulse sset Master 5%- unmute
+#bindsym XF86AudioRaiseVolume    exec --no-startup-id amixer -q -D pulse sset Master 5%+ unmute
+#bindsym XF86AudioMute           exec --no-startup-id amixer -q -D pulse sset Master toggle
 
 # notification
 bindsym Ctrl+space              exec --no-startup-id dunstctl close
@@ -257,3 +260,6 @@ exec_always --no-startup-id pulseaudio --start
 exec_always --no-startup-id lxpolkit
 exec_always --no-startup-id feh --bg-fill ~/Public/desktop/dark_planet_minimalist.png
 exec_always --no-startup-id picom
+
+# Include auto-generated audio and brightness control (created by installer)
+include audio-brightness.conf

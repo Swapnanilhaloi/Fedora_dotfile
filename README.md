@@ -4,6 +4,14 @@ Personal dotfiles for Fedora Linux with i3 window manager.
 
 ## What's Included
 
+Note: The installer previously referenced the `exfat-utils` package which was
+removed/renamed in newer Fedora releases. The script now installs `exfatprogs`.
+# Fedora Dotfiles
+
+Personal dotfiles for Fedora Linux with i3 window manager.
+
+## What's Included
+
 - **i3** - Tiling window manager configuration
 - **Kitty** - Terminal emulator
 - **Rofi** - Application launcher

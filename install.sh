@@ -226,13 +226,24 @@ echo ""
 echo "🔄 Updating system packages..."
 dnf update -y
 
-# Install main packages
+# Install main packages (install individually for clearer logs)
 echo "📦 Installing main packages..."
-dnf install -y \
-  kitty \
-  thunar thunar-volman gvfs udisks2 ntfs-3g exfatprogs dosfstools \
-  feh \
-  rofi || true
+main_packages=(
+  kitty
+  thunar
+  thunar-volman
+  gvfs
+  udisks2
+  ntfs-3g
+  exfatprogs
+  dosfstools
+  feh
+  rofi
+)
+
+for pkg in "${main_packages[@]}"; do
+  install_if_missing "$pkg"
+done
 
 # Install essential utilities
 echo "📦 Installing essential utilities..."

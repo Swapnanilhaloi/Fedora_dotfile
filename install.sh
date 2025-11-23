@@ -565,19 +565,54 @@ if [ -d "\$DOTFILES_DIR/FiraCode" ]; then
   echo -e "\${GREEN}✓\${NC} Fonts installed"
 fi
 
-# Add audio-brightness.conf include to i3 config if not present and not duplicating
-if [ -f ~/.config/i3/config ]; then
-  # If config already contains XF86 audio keybindings, skip adding the auto-generated include
-  if grep -q "XF86Audio" ~/.config/i3/config; then
-    echo -e "${YELLOW}⚠${NC} i3 config already contains XF86 audio keybindings — skipping include audio-brightness.conf to avoid duplicates"
-  else
-    if ! grep -q "include audio-brightness.conf" ~/.config/i3/config; then
-      if grep -q "exec --no-startup-id ~/.fehbg" ~/.config/i3/config; then
-        sed -i '/exec --no-startup-id ~\/\.fehbg/a include audio-brightness.conf' ~/.config/i3/config
+# Handle audio keybinding preference: keep / delete / replace
+# Preference can be set by environment variable AUDIO_BIND_PREFERENCE (keep|delete|replace|prompt)
+# If left as 'prompt' (default) and running interactively, ask the user; otherwise default to 'keep'.
+CONFIG_FILE="$USER_HOME/.config/i3/config"
+AUDIO_BIND_PREFERENCE="${AUDIO_BIND_PREFERENCE:-prompt}"
+if [ -f "$CONFIG_FILE" ]; then
+  if [ "$AUDIO_BIND_PREFERENCE" = "prompt" ] && [ -t 0 ]; then
+    echo "Audio keybindings detected in i3 config. Choose how to handle them:"
+    echo "  1) Keep existing binds (do nothing)"
+    echo "  2) Delete existing binds"
+    echo "  3) Replace existing binds with generated pactl binds (comment then include)"
+    read -p "Enter choice [1-3] (default 1): " choice
+    case "$choice" in
+      2) AUDIO_BIND_PREFERENCE=delete ;;
+      3) AUDIO_BIND_PREFERENCE=replace ;;
+      *) AUDIO_BIND_PREFERENCE=keep ;;
+    esac
+  elif [ "$AUDIO_BIND_PREFERENCE" = "prompt" ]; then
+    # non-interactive default
+    AUDIO_BIND_PREFERENCE=keep
+  fi
+
+  case "$AUDIO_BIND_PREFERENCE" in
+    keep)
+      echo -e "${YELLOW}⚠${NC} Keeping existing XF86 audio keybindings in $CONFIG_FILE"
+      ;;
+    delete)
+      echo "Removing existing XF86 audio binds from $CONFIG_FILE"
+      sed -i "/XF86AudioRaiseVolume\|XF86AudioLowerVolume\|XF86AudioMute\|XF86AudioMicMute/d" "$CONFIG_FILE" || true
+      ;;
+    replace)
+      echo "Commenting out existing XF86 audio binds in $CONFIG_FILE and adding include"
+      sed -i "s/^\(bindsym[[:space:]]\+XF86Audio.*\)/#\1/" "$CONFIG_FILE" || true
+      ;;
+    *)
+      echo "Unknown AUDIO_BIND_PREFERENCE='$AUDIO_BIND_PREFERENCE' — defaulting to keep"
+      ;;
+  esac
+
+  # Add include if not present (for delete or replace modes only)
+  if [ "$AUDIO_BIND_PREFERENCE" = "delete" ] || [ "$AUDIO_BIND_PREFERENCE" = "replace" ]; then
+    if ! grep -q "include audio-brightness.conf" "$CONFIG_FILE"; then
+      if grep -q "exec --no-startup-id ~/.fehbg" "$CONFIG_FILE"; then
+        sed -i '/exec --no-startup-id ~\/\.fehbg/a include audio-brightness.conf' "$CONFIG_FILE"
       else
-        echo -e '\n# Include auto-generated audio and brightness control\ninclude audio-brightness.conf' >> ~/.config/i3/config
+        echo -e '\n# Include auto-generated audio and brightness control\ninclude audio-brightness.conf' >> "$CONFIG_FILE"
       fi
-      echo -e "${GREEN}✓${NC} Added 'include audio-brightness.conf' to i3 config"
+      echo -e "${GREEN}✓${NC} Added 'include audio-brightness.conf' to $CONFIG_FILE"
     fi
   fi
 fi

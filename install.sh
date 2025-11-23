@@ -262,6 +262,17 @@ install_if_missing fastfetch
 echo "🔒 Installing i3 components..."
 install_if_missing i3lock
 install_if_missing i3status
+# Ensure i3blocks-contrib scripts exist (used by i3blocks config)
+echo "⚙️  Ensuring i3blocks-contrib scripts are available..."
+sudo -u "$SUDO_USER" bash -c '
+  mkdir -p "$HOME/.local/src"
+  if [ ! -d "$HOME/.local/src/i3blocks-contrib" ]; then
+    git -C "$HOME/.local/src" clone https://github.com/vivien/i3blocks-contrib i3blocks-contrib || true
+  fi
+  if [ -d "$HOME/.local/src/i3blocks-contrib" ]; then
+    find "$HOME/.local/src/i3blocks-contrib" -type f -exec chmod +x {} \; 2>/dev/null || true
+  fi
+'
 
 # Install audio system
 echo "🔊 Installing audio system..."

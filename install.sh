@@ -565,15 +565,20 @@ if [ -d "\$DOTFILES_DIR/FiraCode" ]; then
   echo -e "\${GREEN}✓\${NC} Fonts installed"
 fi
 
-# Add audio-brightness.conf include to i3 config if not present
+# Add audio-brightness.conf include to i3 config if not present and not duplicating
 if [ -f ~/.config/i3/config ]; then
-  if ! grep -q "include audio-brightness.conf" ~/.config/i3/config; then
-    if grep -q "exec --no-startup-id ~/.fehbg" ~/.config/i3/config; then
-      sed -i '/exec --no-startup-id ~\/\.fehbg/a include audio-brightness.conf' ~/.config/i3/config
-    else
-      echo -e '\n# Include auto-generated audio and brightness control\ninclude audio-brightness.conf' >> ~/.config/i3/config
+  # If config already contains XF86 audio keybindings, skip adding the auto-generated include
+  if grep -q "XF86Audio" ~/.config/i3/config; then
+    echo -e "${YELLOW}⚠${NC} i3 config already contains XF86 audio keybindings — skipping include audio-brightness.conf to avoid duplicates"
+  else
+    if ! grep -q "include audio-brightness.conf" ~/.config/i3/config; then
+      if grep -q "exec --no-startup-id ~/.fehbg" ~/.config/i3/config; then
+        sed -i '/exec --no-startup-id ~\/\.fehbg/a include audio-brightness.conf' ~/.config/i3/config
+      else
+        echo -e '\n# Include auto-generated audio and brightness control\ninclude audio-brightness.conf' >> ~/.config/i3/config
+      fi
+      echo -e "${GREEN}✓${NC} Added 'include audio-brightness.conf' to i3 config"
     fi
-    echo -e "\${GREEN}✓\${NC} Added 'include audio-brightness.conf' to i3 config"
   fi
 fi
 

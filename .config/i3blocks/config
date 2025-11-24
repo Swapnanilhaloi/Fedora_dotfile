@@ -8,14 +8,19 @@ interval=1
 signal=10
 DEFAULT_COLOR="#f3f4f5"
 
-[ram]
-command=echo -n '  '; ~/.local/src/i3blocks-contrib/memory/memory | grep -E -o '^[0-9]+.[0-9]G'
-interval=30
+[memory]
+command=free -h | grep Mem | awk '{print "  " $3 "/" $2}'
+interval=5
+
+[battery]
+command=cat /sys/class/power_supply/BAT0/capacity 2>/dev/null | xargs -I {} echo "  {}%"
+interval=5
 
 [disk-home]
-command=echo -n '  '; df -h -l --output='used' "$HOME" | grep -E -o '[0-9]+G'
+command=echo -n '  '; df -h -l --output='used' "$HOME" | grep -E -o '[0-9]+G'
 interval=30
 
-[rofi-calendar]
+[calendar]
 command=$HOME/.local/bin/rofi-calendar
-interval=5
+full_text=📅
+interval=1
